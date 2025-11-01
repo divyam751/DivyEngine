@@ -8,11 +8,4 @@ const DB_NAME = process.env.DB_NAME;
 const PORT = process.env.PORT || 3001;
 const SERVICE = "AUTH-SERVICE";
 
-export {
-  MONGO_URI,
-  JWT_SECRET,
-  JWT_EXPIRES_IN,
-  DB_NAME,
-  PORT,
-  SERVICE,
-};
+export { MONGO_URI, JWT_SECRET, JWT_EXPIRES_IN, DB_NAME, PORT, SERVICE };

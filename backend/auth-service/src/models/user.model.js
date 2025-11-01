@@ -5,7 +5,6 @@ import { v4 as uuidv4 } from "uuid";
 import toTitleCase from "../utils/formatter.js";
 import { JWT_EXPIRES_IN, JWT_SECRET } from "../utils/constant.js";
 
-
 const userSchema = new mongoose.Schema(
   {
     publicId: {
