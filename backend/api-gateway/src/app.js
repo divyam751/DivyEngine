@@ -1,5 +1,6 @@
 import cors from "cors";
 import express from "express";
+import apiResponse from "./utils/apiResponse.js";
 
 import { createProxyMiddleware } from "http-proxy-middleware";
 import {
@@ -52,6 +53,10 @@ app.use(
     },
   })
 );
+
+app.get("/", (req, res) => {
+  apiResponse.success(res, 200, "Welcome to the API Gateway");
+});
 
 app.get("/health", (req, res) => {
   apiResponse.success(res, 200, "API Gateway is healthy");
