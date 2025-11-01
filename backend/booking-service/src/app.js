@@ -8,7 +8,15 @@ app.use(cors());
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.send("Hello World! Booking services is running.");
+  res
+    .status(200)
+    .json({ status: "success", message: "Welcome to the Booking Service" });
+});
+
+app.get("/health", (req, res) => {
+  res
+    .status(200)
+    .json({ status: "success", message: "Booking Service is healthy" });
 });
 
 app.use("/api/v1/booking", bookingRouter);
