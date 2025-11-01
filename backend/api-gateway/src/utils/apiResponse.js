@@ -5,7 +5,7 @@ const capitalizeFirstLetter = (str) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
- const apiResponse = {
+const apiResponse = {
   success: (res, statusCode = 200, message = "", data = {}) => {
     return res.status(statusCode).json({
       status: "success",
@@ -24,6 +24,5 @@ const capitalizeFirstLetter = (str) => {
     });
   },
 };
-
 
 export default apiResponse;

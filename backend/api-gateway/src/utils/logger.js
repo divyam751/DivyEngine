@@ -1,4 +1,3 @@
-
 import chalk from "chalk";
 
 const getTime = () => new Date().toISOString();

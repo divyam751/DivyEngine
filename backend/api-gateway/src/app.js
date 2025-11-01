@@ -1,10 +1,12 @@
 import cors from "cors";
 import express from "express";
-import apiResponse from "../utils/apiResponse.js";
+
 import { createProxyMiddleware } from "http-proxy-middleware";
-import { AUTH_SERVICE_URL, BOOKING_SERVICE_URL, CAR_SERVICE_URL } from "../utils/constant.js";
-
-
+import {
+  AUTH_SERVICE_URL,
+  BOOKING_SERVICE_URL,
+  CAR_SERVICE_URL,
+} from "./utils/constant.js";
 
 const app = express();
 
@@ -59,6 +61,5 @@ app.get("/health", (req, res) => {
 app.use((req, res) => {
   apiResponse.error(res, 404, "Route not found");
 });
-
 
 export default app;

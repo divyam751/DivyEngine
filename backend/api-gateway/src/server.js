@@ -1,7 +1,7 @@
 import app from "./app.js";
-import logger from "../utils/logger.js";
-import { PORT, SERVICE } from "../utils/constant.js";
+import { PORT, SERVICE } from "./utils/constant.js";
 
+import logger from "./utils/logger.js";
 
 app.listen(PORT, async () => {
   try {
