@@ -1,4 +1,3 @@
-
 import mongoose from "mongoose";
 import { MONGO_URI, DB_NAME, SERVICE } from "../utils/constant.js";
 import logger from "../utils/logger.js";

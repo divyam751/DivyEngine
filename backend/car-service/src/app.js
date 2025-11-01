@@ -2,9 +2,6 @@ import express from "express";
 import cors from "cors";
 import carRouter from "./routes/car.routes.js";
 
-
-
-
 const app = express();
 
 app.use(cors());

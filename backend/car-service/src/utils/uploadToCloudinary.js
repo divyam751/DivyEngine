@@ -1,8 +1,11 @@
-import { v2 as cloudinary } from 'cloudinary'
+import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 import logger from "./logger.js";
-import { CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET, CLOUDINARY_CLOUD_NAME } from './constant.js';
-
+import {
+  CLOUDINARY_API_KEY,
+  CLOUDINARY_API_SECRET,
+  CLOUDINARY_CLOUD_NAME,
+} from "./constant.js";
 
 cloudinary.config({
   cloud_name: CLOUDINARY_CLOUD_NAME,

@@ -5,7 +5,6 @@ import { SERVICE } from "../utils/constant.js";
 import apiResponse from "../utils/apiResponse.js";
 import uploadToCloudinary from "../utils/uploadToCloudinary.js";
 
-
 // create a new car listing
 const createCar = async (req, res) => {
   try {

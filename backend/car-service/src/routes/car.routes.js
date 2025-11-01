@@ -1,11 +1,22 @@
 import express from "express";
 
-
-import { authentication, authorization } from "../middlewares/authMiddleware.js";
+import {
+  authentication,
+  authorization,
+} from "../middlewares/authMiddleware.js";
 
 import upload from "../middlewares/uploadMiddleware.js";
 import internalAuthMiddleware from "../middlewares/internalAuthMiddleware.js";
-import { createCar, getAllListedCars, getAvailableCarsForBooking, getCarDetailsForInternal, getMyListedCars, getPendingCarsForApproval, updateCarDetailsByLister, updateCarStatusByAdmin } from "../controllers/car.controller.js";
+import {
+  createCar,
+  getAllListedCars,
+  getAvailableCarsForBooking,
+  getCarDetailsForInternal,
+  getMyListedCars,
+  getPendingCarsForApproval,
+  updateCarDetailsByLister,
+  updateCarStatusByAdmin,
+} from "../controllers/car.controller.js";
 
 const carRouter = express.Router();
 
@@ -73,14 +84,11 @@ carRouter.get(
   getAvailableCarsForBooking
 );
 
-
-
 // -------------------- INTERNAL MICROSERVICE ROUTES -------------------- //
 carRouter.get(
   "/internal/:carId",
   internalAuthMiddleware,
   getCarDetailsForInternal
 );
-
 
 export default carRouter;
