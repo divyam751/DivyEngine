@@ -19,27 +19,26 @@ const corsOption = {
 };
 
 app.use(cors(corsOption));
-app.use(express.json());
 
 // -------------------------
 // API Gateway routes
 // -------------------------
 
-// Auth routes
 app.use(
-  "/api/v1/user",
+  "/api/v1/auth",
   createProxyMiddleware({
     target: AUTH_SERVICE_URL,
     changeOrigin: true,
     onError: (err, req, res) => {
-      apiResponse.error(res, 502, "Service unavailable");
+      console.error("Proxy error:", err.message);
+      res.status(502).json({ error: "Auth service unavailable" });
     },
   })
 );
 
 // Car routes
 app.use(
-  "/api/v1/cars",
+  "/api/v1/car",
   createProxyMiddleware({
     target: CAR_SERVICE_URL,
     changeOrigin: true,
@@ -51,7 +50,7 @@ app.use(
 
 // Booking routes
 app.use(
-  "/api/v1/bookings",
+  "/api/v1/booking",
   createProxyMiddleware({
     target: BOOKING_SERVICE_URL,
     changeOrigin: true,

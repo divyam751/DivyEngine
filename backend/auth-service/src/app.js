@@ -17,13 +17,10 @@ const corsOption = {
 
 app.use(cors(corsOption));
 
-app.get("/", (req, res) => {
-  return apiResponse.success(res, 200, "Welcome to Auth Service API", {});
-});
 app.get("/health", (req, res) => {
   return apiResponse.success(res, 200, "Auth Service is healthy", {});
 });
 
-app.use("/api/v1/auth", userRouter);
+app.use("/", userRouter);
 
 export default app;

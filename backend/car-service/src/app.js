@@ -15,18 +15,12 @@ app.use(cors(corsOption));
 
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res
-    .status(200)
-    .json({ status: "success", message: "Welcome to the Car Service" });
-});
-
 app.get("/health", (req, res) => {
   res
     .status(200)
     .json({ status: "success", message: "Car Service is healthy" });
 });
 
-app.use("/api/v1/car", carRouter);
+app.use("/", carRouter);
 
 export default app;
