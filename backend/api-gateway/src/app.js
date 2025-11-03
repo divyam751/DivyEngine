@@ -7,11 +7,18 @@ import {
   AUTH_SERVICE_URL,
   BOOKING_SERVICE_URL,
   CAR_SERVICE_URL,
+  CLIENT_ORIGIN,
 } from "./utils/constant.js";
 
 const app = express();
+app.use(cookieParser());
 
-app.use(cors());
+const corsOption = {
+  origin: CLIENT_ORIGIN,
+  credentials: true,
+};
+
+app.use(cors(corsOption));
 app.use(express.json());
 
 // -------------------------
@@ -20,7 +27,7 @@ app.use(express.json());
 
 // Auth routes
 app.use(
-  "/api/v1/users",
+  "/api/v1/user",
   createProxyMiddleware({
     target: AUTH_SERVICE_URL,
     changeOrigin: true,
