@@ -1,7 +1,7 @@
 import cors from "cors";
 import express from "express";
 import apiResponse from "./utils/apiResponse.js";
-
+import cookieParser from "cookie-parser";
 import { createProxyMiddleware } from "http-proxy-middleware";
 import {
   AUTH_SERVICE_URL,
