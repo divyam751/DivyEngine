@@ -5,10 +5,9 @@ import { JWT_SECRET } from "../utils/constant.js";
 // ✅ Authentication: verifies token & extracts user
 const authentication = (req, res, next) => {
   try {
-    // Expect header: "Authorization: Bearer <token>"
-    const authHeader = req.headers.authorization;
+    const token = req.cookies.authToken;
 
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    if (!token) {
       return apiResponse.error(
         res,
         401,
@@ -16,7 +15,6 @@ const authentication = (req, res, next) => {
       );
     }
 
-    const token = authHeader.split(" ")[1];
     const decoded = jwt.verify(token, JWT_SECRET);
 
     req.user = decoded; // decoded should contain user data (publicId, email, role, etc.)

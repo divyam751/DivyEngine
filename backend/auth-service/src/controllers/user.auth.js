@@ -60,7 +60,16 @@ const login = async (req, res) => {
     }
 
     const token = user.generateAuthToken();
-    return apiResponse.success(res, 200, "Login successful", { token });
+
+    res.cookie("authToken", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // HTTPS only in production
+      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+      maxAge: 60 * 60 * 1000, // 1 hour
+      path: "/", // 👈 ensures all routes can access the cookie
+    });
+
+    return apiResponse.success(res, 200, "Login successful");
   } catch (error) {
     logger.error("UserAuth-Login", `Login Error: ${error.message}`);
     return apiResponse.error(res, 500, "Server Error", [error.message]);
