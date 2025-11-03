@@ -69,11 +69,30 @@ const login = async (req, res) => {
       path: "/", // 👈 ensures all routes can access the cookie
     });
 
-    return apiResponse.success(res, 200, "Login successful");
+    return apiResponse.success(res, 200, "Login successful", {
+      user: user.fullname,
+    });
   } catch (error) {
     logger.error("UserAuth-Login", `Login Error: ${error.message}`);
     return apiResponse.error(res, 500, "Server Error", [error.message]);
   }
 };
 
-export { register, login };
+const logout = async (req, res) => {
+  try {
+    // Clear the authentication cookie
+    res.clearCookie("authToken", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+      path: "/", // must match the login cookie path
+    });
+
+    return apiResponse.success(res, 200, "Logout successful");
+  } catch (error) {
+    logger.error("UserAuth-Logout", `Logout Error: ${error.message}`);
+    return apiResponse.error(res, 500, "Server Error", [error.message]);
+  }
+};
+
+export { register, login, logout };
