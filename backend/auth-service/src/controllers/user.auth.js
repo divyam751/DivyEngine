@@ -95,4 +95,15 @@ const logout = async (req, res) => {
   }
 };
 
-export { register, login, logout };
+const checkAuth = async (req, res) => {
+  try {
+    return apiResponse.success(res, 200, "User varified successfully", {
+      user: req.user.fullname,
+    });
+  } catch (error) {
+    logger.error("UserAuth-checkAuth", `CheckAuth Error: ${error.message}`);
+    return apiResponse.error(res, 500, "Server Error", [error.message]);
+  }
+};
+
+export { register, login, logout, checkAuth };
