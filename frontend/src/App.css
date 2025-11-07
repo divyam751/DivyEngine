@@ -5,3 +5,15 @@
   flex-direction: column;
   align-items: center;
 }
+
+.routing-Links {
+  display: flex;
+  gap: 15px;
+}
+
+@media (max-width: 768px) {
+  .routing-Links {
+    flex-direction: column;
+    text-align: center;
+  }
+}

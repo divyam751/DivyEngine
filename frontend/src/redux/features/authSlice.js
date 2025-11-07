@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../utils/api";
+import Cookies from "js-cookie";
+import { toastError, toastSuccess } from "./toastSlice";
 
 // --------------------------
 // Async Thunks
@@ -8,11 +10,13 @@ import api from "../../utils/api";
 // REGISTER
 export const registerUser = createAsyncThunk(
   "auth/register",
-  async (payload, { rejectWithValue }) => {
+  async (payload, { dispatch, rejectWithValue }) => {
     try {
       const res = await api.post("/auth/register", payload);
+      dispatch(toastSuccess(res.data?.message));
       return res.data;
     } catch (err) {
+      dispatch(toastError(err.response?.data?.message));
       return rejectWithValue(err.response?.data || { message: err.message });
     }
   }
@@ -21,11 +25,14 @@ export const registerUser = createAsyncThunk(
 // LOGIN
 export const loginUser = createAsyncThunk(
   "auth/login",
-  async (payload, { rejectWithValue }) => {
+  async (payload, { dispatch, rejectWithValue }) => {
     try {
       const res = await api.post("/auth/login", payload);
+      dispatch(toastSuccess(res.data.message));
       return res.data;
     } catch (err) {
+      console.log({ err });
+      dispatch(toastError(err.response?.data?.message));
       return rejectWithValue(err.response?.data || { message: err.message });
     }
   }
@@ -34,11 +41,35 @@ export const loginUser = createAsyncThunk(
 // LOGOUT
 export const logoutUser = createAsyncThunk(
   "auth/logout",
-  async (_, { rejectWithValue }) => {
+  async (_, { dispatch, rejectWithValue }) => {
     try {
+      console.log("logout called");
       const res = await api.post("/auth/logout");
+      dispatch(toastSuccess(res.data.message));
       return res.data;
     } catch (err) {
+      dispatch(toastError(err.response?.data?.message));
+      return rejectWithValue(err.response?.data || { message: err.message });
+    }
+  }
+);
+// VERIFY USER SESSION (check cookie token)
+// ✅ checkAuth - silent version
+export const checkAuth = createAsyncThunk(
+  "auth/checkAuth",
+  async (_, { rejectWithValue }) => {
+    try {
+      // Browser automatically sends HttpOnly cookie
+      const res = await api.get("/auth/me", { withCredentials: true });
+      return res.data;
+    } catch (err) {
+      // 🔇 Suppress console warnings
+      if (err.response?.status === 401) {
+        // Return controlled rejection, but no console output
+        return rejectWithValue({ silent: true });
+      }
+
+      // Handle other errors gracefully
       return rejectWithValue(err.response?.data || { message: err.message });
     }
   }
@@ -126,6 +157,26 @@ const authSlice = createSlice({
       .addCase(logoutUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload?.message || "Logout failed.";
+      })
+      // ------------------------
+      // CheckAuth
+      // ------------------------
+      .addCase(checkAuth.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(checkAuth.fulfilled, (state, action) => {
+        state.loading = false;
+        state.isAuthenticated = true;
+        state.user = action.payload?.data?.user || null;
+      })
+      .addCase(checkAuth.rejected, (state, action) => {
+        state.loading = false;
+        // Only reset auth if not a silent rejection
+        if (!action.payload?.silent) {
+          state.isAuthenticated = false;
+          state.user = null;
+          state.error = null; // Don’t show any message to the user
+        }
       });
   },
 });

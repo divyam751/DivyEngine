@@ -1,0 +1,7 @@
+.aboutus-container {
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
