@@ -80,7 +80,11 @@ userSchema.methods.comparePassword = async function (enteredPassword) {
 };
 
 userSchema.methods.generateAuthToken = function () {
-  const payload = { publicId: this.publicId, role: this.role };
+  const payload = {
+    publicId: this.publicId,
+    role: this.role,
+    username: this.fullname,
+  };
   return jwt.sign(payload, JWT_SECRET, {
     expiresIn: JWT_EXPIRES_IN,
   });

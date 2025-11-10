@@ -16,7 +16,6 @@ const authentication = (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, JWT_SECRET);
-
     req.user = decoded; // decoded should contain user data (publicId, email, role, etc.)
     next();
   } catch (error) {

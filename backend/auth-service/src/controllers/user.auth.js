@@ -98,7 +98,7 @@ const logout = async (req, res) => {
 const checkAuth = async (req, res) => {
   try {
     return apiResponse.success(res, 200, "User varified successfully", {
-      user: req.user.fullname,
+      user: req.user.username,
     });
   } catch (error) {
     logger.error("UserAuth-checkAuth", `CheckAuth Error: ${error.message}`);
