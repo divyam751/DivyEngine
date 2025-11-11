@@ -1,14 +1,34 @@
 import path from "path";
+import fs from "fs";
 import logger from "../utils/logger.js";
 import Car from "../models/car.model.js";
 import { SERVICE } from "../utils/constant.js";
 import apiResponse from "../utils/apiResponse.js";
 import uploadToCloudinary from "../utils/uploadToCloudinary.js";
+import { fileURLToPath } from "url";
 
 // create a new car listing
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Helper to safely delete local file
+const deleteLocalFile = (file) => {
+  try {
+    if (file && file.path && fs.existsSync(file.path)) {
+      fs.unlinkSync(file.path);
+      logger.warn("CLEANUP", `Deleted unused local file: ${file.path}`);
+    }
+  } catch (err) {
+    logger.error("CLEANUP", `Failed to delete local file: ${err.message}`);
+  }
+};
+
 const createCar = async (req, res) => {
+  let uploadedImage = null;
+  let imageUrl = null;
   try {
     if (!req.user || !req.user.publicId) {
+      deleteLocalFile(req.file);
       return apiResponse.error(
         res,
         401,
@@ -16,16 +36,18 @@ const createCar = async (req, res) => {
       );
     }
 
-    let imageUrl = null;
-
-    // ✅ If an image was uploaded, upload it to Cloudinary
-    if (req.file) {
-      const localPath = path.join(__dirname, "../uploads", req.file.filename);
-      imageUrl = await uploadToCloudinary(localPath);
-    } else {
-      return apiResponse.error(res, 400, "Missing required field: image");
+    // ✅ Parse location JSON safely
+    let location = {};
+    if (req.body.location) {
+      try {
+        location = JSON.parse(req.body.location);
+      } catch (err) {
+        deleteLocalFile(req.file);
+        return apiResponse.error(res, 400, "Invalid location format");
+      }
     }
 
+    // ✅ Validate required fields
     const requiredFields = [
       "name",
       "brand",
@@ -34,19 +56,19 @@ const createCar = async (req, res) => {
       "fuelType",
       "seatingCapacity",
       "pricePerDay",
-      "listerId",
-      "location",
       "registrationNumber",
       "year",
     ];
 
     for (const field of requiredFields) {
       if (!req.body[field]) {
+        deleteLocalFile(req.file);
         return apiResponse.error(res, 400, `Missing required field: ${field}`);
       }
     }
 
     if (!location.city) {
+      deleteLocalFile(req.file);
       return apiResponse.error(
         res,
         400,
@@ -54,9 +76,54 @@ const createCar = async (req, res) => {
       );
     }
 
-    // ✅ Combine image URL with other car data
+    const registrationNumber = req?.body?.registrationNumber
+      ?.trim()
+      .toUpperCase();
+    const existingCar = await Car.findOne({ registrationNumber });
+
+    if (existingCar) {
+      deleteLocalFile(req.file); // 🧹 Clean up unused local image
+      logger.error(
+        SERVICE,
+        `Duplicate Request! Registration Number already exists: ${registrationNumber}`
+      );
+      return apiResponse.error(
+        res,
+        400,
+        `This car (${registrationNumber}) is already registered.`,
+        ["Duplicate Request!"]
+      );
+    }
+
+    // ✅ Upload image to Cloudinary
+    if (req.file) {
+      const localPath = path.join(__dirname, "../uploads", req.file.filename);
+      uploadedImage = await uploadToCloudinary(localPath);
+      imageUrl = uploadedImage?.url;
+    } else {
+      return apiResponse.error(res, 400, "Missing required field: image");
+    }
+
+    // ✅ Build Car Data
     const carData = {
-      ...req.body,
+      name: req.body.name,
+      brand: req.body.brand,
+      type: req.body.type,
+      transmission: req.body.transmission,
+      fuelType: req.body.fuelType,
+      seatingCapacity: req.body.seatingCapacity,
+      pricePerDay: req.body.pricePerDay,
+      pricePerHour: req.body.pricePerHour || null,
+      availability: req.body.availability
+        ? JSON.parse(req.body.availability)
+        : {},
+      mileage: req.body.mileage,
+      color: req.body.color,
+      features: req.body.features ? JSON.parse(req.body.features) : [],
+      condition: req.body.condition || "Good",
+      registrationNumber,
+      year: req.body.year,
+      location,
       images: imageUrl ? [imageUrl] : [],
       listerId: req.user.publicId,
       listerContact: req.user.contact || null,
@@ -68,9 +135,12 @@ const createCar = async (req, res) => {
     return apiResponse.success(res, 201, "Car listed successfully", newCar);
   } catch (error) {
     logger.error(SERVICE, `Failed to list car → ${error.message}`);
+    deleteLocalFile(req.file); // 🧹 Fallback cleanup
     return apiResponse.error(res, 500, "Failed to list car", error.message);
   }
 };
+
+export default createCar;
 
 // get your listed cars by listerId
 

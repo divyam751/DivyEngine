@@ -27,7 +27,7 @@ const uploadToCloudinary = async (filePath) => {
       `Image uploaded successfully: ${result.secure_url}`
     );
 
-    return result.secure_url;
+    return { url: result.secure_url, publicId: result.public_id };
   } catch (error) {
     logger.error("UPLOAD", `Cloudinary upload failed: ${error.message}`);
     fs.existsSync(filePath) && fs.unlinkSync(filePath);
