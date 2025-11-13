@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../utils/api";
-import Cookies from "js-cookie";
 import { toastError, toastSuccess } from "./toastSlice";
 
 // --------------------------
@@ -61,6 +60,7 @@ export const checkAuth = createAsyncThunk(
     try {
       // Browser automatically sends HttpOnly cookie
       const res = await api.get("/auth/me", { withCredentials: true });
+      console.log(res.data);
       return res.data;
     } catch (err) {
       // 🔇 Suppress console warnings
